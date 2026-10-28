@@ -234,7 +234,8 @@ export default function SiteShell() {
           About
         </a>
 
-        <div className="relative md:absolute md:inset-0">
+        {/* Inset top and bottom so scrolling content clips before the ABOUT link and social icons */}
+        <div className="relative md:absolute md:inset-x-0 md:bottom-20 md:top-20">
           {sections.map((s, i) => {
             const isActive = i === active;
             const state = isActive
@@ -248,9 +249,9 @@ export default function SiteShell() {
                 }}
                 aria-labelledby={`${s.id}-title`}
                 inert={isDesktop && !isActive}
-                className={`thin-scroll relative scroll-mt-12 md:absolute md:inset-0 md:overflow-y-auto md:overscroll-contain md:transition-[opacity,translate,visibility] md:duration-500 md:ease-out ${state}`}
+                className={`thin-scroll relative scroll-mt-12 md:absolute md:inset-0 md:overflow-y-auto md:overscroll-contain md:[mask-image:linear-gradient(to_bottom,transparent,black_2rem,black_calc(100%-2rem),transparent)] md:transition-[opacity,translate,visibility] md:duration-500 md:ease-out ${state}`}
               >
-                <div className="flex min-h-full flex-col justify-center px-6 py-16 md:px-16 md:py-28 lg:px-24">
+                <div className="flex min-h-full flex-col justify-center px-6 py-16 md:px-16 md:py-12 lg:px-24">
                   <div className="mx-auto w-full max-w-[640px]">{sectionBodies[i]}</div>
                 </div>
               </section>
