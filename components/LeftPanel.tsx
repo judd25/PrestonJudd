@@ -1,15 +1,19 @@
 import Image from "next/image";
 import { site } from "@/content/site";
 
-export default function LeftPanel() {
+/** `inactive` is true on mobile while the content screen is showing, so the hidden hero can't take focus. */
+export default function LeftPanel({ inactive = false }: { inactive?: boolean }) {
   return (
-    <header className="relative h-[70vh] min-h-[460px] w-full overflow-hidden md:h-full md:min-h-0 md:w-1/2 md:shrink-0">
+    <header inert={inactive} className="relative h-dvh w-full shrink-0 overflow-hidden md:h-full md:w-1/2">
       <Image
         src="/images/preston-portrait.jpg"
         alt={site.portraitAlt}
         fill
         priority
-        sizes="(min-width: 768px) 50vw, 100vw"
+        quality={90}
+        // A full-height "cover" image renders wider than the viewport, so request
+        // a larger file than the panel width to keep the photo sharp.
+        sizes="(min-width: 768px) 75vw, 150vw"
         className="object-cover object-[50%_20%]"
       />
 
@@ -17,7 +21,7 @@ export default function LeftPanel() {
       <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/45 to-transparent" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
 
-      <p className="text-shadow-soft absolute left-6 top-16 text-sm font-semibold uppercase tracking-[0.35em] md:left-10 md:top-9">
+      <p className="text-shadow-soft absolute left-6 top-8 text-sm font-semibold uppercase tracking-[0.35em] md:left-10 md:top-9">
         {site.name}
       </p>
 

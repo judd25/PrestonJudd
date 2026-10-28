@@ -5,6 +5,8 @@
 }
 
 html {
+  /* Swipes drive the site's own navigation; stop pull-to-refresh and bounce. */
+  overscroll-behavior: none;
   background: #111;
   color: #fff;
 }

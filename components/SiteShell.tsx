@@ -9,8 +9,8 @@ import { BioSection, CompositionsSection, FutureSection, ListenSection, SectionH
 import { indexFromHash, sections } from "./sections";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
-/** Minimum time between section switches; slightly longer than the 500ms transition. */
-const SWITCH_LOCK_MS = 700;
+/** Minimum time between section switches; slightly longer than the transitions. */
+const SWITCH_LOCK_MS = 750;
 /** A pause this long between wheel events ends one scroll "gesture". */
 const GESTURE_IDLE_MS = 200;
 const SWIPE_THRESHOLD_PX = 50;
@@ -29,6 +29,8 @@ function useIsDesktop() {
   );
 }
 
+const isDesktopNow = () => window.matchMedia(DESKTOP_QUERY).matches;
+
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -43,25 +45,36 @@ function localDateString() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+/**
+ * Desktop: portrait on the left, content panel on the right.
+ * Mobile: two full screens stacked vertically, the portrait first and the content panel second.
+ * On both, the content panel's background stays put and only the section content changes.
+ */
 export default function SiteShell() {
   const isDesktop = useIsDesktop();
   const [active, setActive] = useState(0);
+  /** Mobile only: whether the portrait screen is showing instead of the content panel. */
+  const [heroShown, setHeroShown] = useState(true);
   const [today, setToday] = useState<string | null>(null);
   const activeRef = useRef(0);
+  const heroShownRef = useRef(true);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
-  /** The scrollable content area under each section's fixed header (desktop). */
+  /** The scrollable content area under each section's fixed header. */
   const bodyRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   activeRef.current = active;
+  heroShownRef.current = heroShown;
+
+  const showHero = useCallback(() => {
+    setHeroShown(true);
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }, []);
 
   const goTo = useCallback((index: number) => {
     if (index < 0 || index >= sections.length) return;
-    const desktop = window.matchMedia(DESKTOP_QUERY).matches;
     setActive(index);
+    setHeroShown(false);
     history.replaceState(null, "", `#${sections[index].id}`);
-    if (!desktop) {
-      sectionRefs.current[index]?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
-    }
   }, []);
 
   const linkTo = (index: number) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -74,7 +87,7 @@ export default function SiteShell() {
     const index = indexFromHash(window.location.hash);
     if (index >= 0) {
       setActive(index);
-      if (!window.matchMedia(DESKTOP_QUERY).matches) sectionRefs.current[index]?.scrollIntoView();
+      setHeroShown(false);
     }
     setToday(localDateString());
 
@@ -86,10 +99,8 @@ export default function SiteShell() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, [goTo]);
 
-  // Desktop: wheel, touch swipe, and keyboard switch sections.
+  // Wheel, touch swipe, and keyboard move between screens and sections.
   useEffect(() => {
-    if (!isDesktop) return;
-
     // Each wheel gesture either scrolls the section's content or switches sections, never both.
     let gestureMode: "scroll" | "switch" | null = null;
     let idleTimer: number | undefined;
@@ -97,14 +108,23 @@ export default function SiteShell() {
     let touchStartY: number | null = null;
     let touchStartScrollable = false;
 
-    const activeSection = () => sectionRefs.current[activeRef.current];
-    const activeBody = () => bodyRefs.current[activeRef.current];
+    const onContentScreen = () => isDesktopNow() || !heroShownRef.current;
+    const activeSection = () => (onContentScreen() ? sectionRefs.current[activeRef.current] : null);
+    const activeBody = () => (onContentScreen() ? bodyRefs.current[activeRef.current] : null);
 
     const trySwitch = (dir: number) => {
       const now = performance.now();
       if (now < lockUntil) return;
       lockUntil = now + SWITCH_LOCK_MS;
-      goTo(activeRef.current + dir);
+
+      if (!onContentScreen()) {
+        // Mobile portrait screen: moving forward reveals the content panel.
+        if (dir > 0) goTo(activeRef.current);
+        return;
+      }
+      const next = activeRef.current + dir;
+      if (next < 0 && !isDesktopNow()) showHero();
+      else goTo(next);
     };
 
     const onWheel = (e: WheelEvent) => {
@@ -179,22 +199,7 @@ export default function SiteShell() {
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isDesktop, goTo]);
-
-  // Mobile: highlight the nav item for the section currently on screen.
-  useEffect(() => {
-    if (isDesktop) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(sectionRefs.current.indexOf(entry.target as HTMLElement));
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    sectionRefs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, [isDesktop]);
+  }, [goTo, showHero]);
 
   const sectionBodies = [
     <BioSection key="bio" />,
@@ -204,123 +209,144 @@ export default function SiteShell() {
   ];
 
   const pad = (n: number) => String(n).padStart(2, "0");
+  /** Mobile only: the portrait screen is showing and the content panel is off-screen. */
+  const mobileHeroShown = !isDesktop && heroShown;
 
   return (
-    <div className="bg-[#111] md:flex md:h-dvh md:overflow-hidden">
+    <div className="h-dvh overflow-hidden bg-[#111] md:flex">
       <a
         href="#main"
+        onClick={linkTo(active)}
         className="sr-only z-50 bg-white px-4 py-2 text-sm text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
         Skip to content
       </a>
 
-      {/* Mobile sticky nav */}
-      <nav aria-label="Sections" className="fixed inset-x-0 top-0 z-40 bg-black/55 backdrop-blur-md md:hidden">
-        <ul className="flex items-center justify-between px-4 py-3">
-          {sections.map((s, i) => (
-            <li key={s.id}>
-              <a
-                href={`#${s.id}`}
-                onClick={linkTo(i)}
-                aria-current={active === i ? "true" : undefined}
-                className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors ${
-                  active === i ? "text-white underline underline-offset-4" : "text-white/65"
-                }`}
-              >
-                {s.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* Mobile: a two-screen track that slides up to reveal the content panel. Desktop: no box, children sit side by side. */}
+      <div
+        className={`transition-[translate] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] md:contents ${
+          heroShown ? "translate-y-0" : "-translate-y-1/2"
+        }`}
+      >
+        <LeftPanel inactive={!isDesktop && !heroShown} />
 
-      <LeftPanel />
-
-      <main id="main" tabIndex={-1} className="relative min-w-0 overflow-hidden md:h-full md:w-1/2">
-        <Image src="/images/concrete-texture.jpg" alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
-        <div aria-hidden className="absolute inset-0 bg-black/45" />
-
-        <a
-          href="#bio"
-          onClick={linkTo(0)}
-          className="absolute right-10 top-8 z-20 hidden text-xs font-semibold uppercase tracking-[0.3em] underline decoration-1 underline-offset-[6px] md:block"
+        <main
+          id="main"
+          tabIndex={-1}
+          inert={mobileHeroShown}
+          className="relative h-dvh min-w-0 overflow-hidden md:h-full md:w-1/2"
         >
-          About
-        </a>
+          <Image
+            src="/images/concrete-texture.jpg"
+            alt=""
+            fill
+            sizes="(min-width: 768px) 50vw, 200vw"
+            className="object-cover"
+          />
+          <div aria-hidden className="absolute inset-0 bg-black/45" />
 
-        {/* Inset top and bottom so scrolling content clips before the ABOUT link and social icons */}
-        <div className="relative md:absolute md:inset-x-0 md:bottom-20 md:top-20">
-          {sections.map((s, i) => {
-            const isActive = i === active;
-            const state = isActive
-              ? "md:visible md:translate-y-0 md:opacity-100"
-              : `md:pointer-events-none md:invisible md:opacity-0 ${i < active ? "md:-translate-y-6" : "md:translate-y-6"}`;
-            return (
-              <section
-                key={s.id}
-                ref={(el) => {
-                  sectionRefs.current[i] = el;
-                }}
-                aria-labelledby={`${s.id}-title`}
-                inert={isDesktop && !isActive}
-                className={`relative scroll-mt-12 md:absolute md:inset-0 md:transition-[opacity,translate,visibility] md:duration-500 md:ease-out ${state}`}
-              >
-                {/* Short sections stay vertically centered; tall ones fill the height and scroll below the header. */}
-                <div className="flex flex-col justify-center px-6 py-16 md:h-full md:px-16 md:py-6 lg:px-24">
-                  <div className="mx-auto flex w-full max-w-[640px] flex-col md:max-h-full">
-                    <SectionHeader number={i + 1} title={s.title} id={`${s.id}-title`} />
-                    <div
-                      ref={(el) => {
-                        bodyRefs.current[i] = el;
-                      }}
-                      className="thin-scroll pt-10 md:min-h-0 md:overflow-y-auto md:overscroll-contain md:pb-8 md:pt-8 md:[mask-image:linear-gradient(to_bottom,transparent,black_2rem,black_calc(100%-2rem),transparent)]"
-                    >
-                      {sectionBodies[i]}
+          {/* Mobile section nav */}
+          <nav aria-label="Sections" className="absolute inset-x-0 top-0 z-20 md:hidden">
+            <ul className="flex items-center justify-between px-6 py-5">
+              {sections.map((s, i) => (
+                <li key={s.id}>
+                  <a
+                    href={`#${s.id}`}
+                    onClick={linkTo(i)}
+                    aria-current={active === i ? "true" : undefined}
+                    className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors ${
+                      active === i ? "text-white underline underline-offset-4" : "text-white/65"
+                    }`}
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <a
+            href="#bio"
+            onClick={linkTo(0)}
+            className="absolute right-10 top-8 z-20 hidden text-xs font-semibold uppercase tracking-[0.3em] underline decoration-1 underline-offset-[6px] md:block"
+          >
+            About
+          </a>
+
+          {/* Inset top and bottom so scrolling content clips before the nav/ABOUT link and social icons */}
+          <div className="absolute inset-x-0 bottom-16 top-14 md:bottom-20 md:top-20">
+            {sections.map((s, i) => {
+              const isActive = i === active;
+              const state = isActive
+                ? "visible translate-y-0 opacity-100"
+                : `pointer-events-none invisible opacity-0 ${i < active ? "-translate-y-6" : "translate-y-6"}`;
+              return (
+                <section
+                  key={s.id}
+                  ref={(el) => {
+                    sectionRefs.current[i] = el;
+                  }}
+                  aria-labelledby={`${s.id}-title`}
+                  inert={!isActive}
+                  className={`absolute inset-0 transition-[opacity,translate,visibility] duration-500 ease-out ${state}`}
+                >
+                  {/* Short sections stay vertically centered; tall ones fill the height and scroll below the header. */}
+                  <div className="flex h-full flex-col justify-center px-6 py-4 md:px-16 md:py-6 lg:px-24">
+                    <div className="mx-auto flex max-h-full w-full max-w-[640px] flex-col">
+                      <SectionHeader number={i + 1} title={s.title} id={`${s.id}-title`} />
+                      <div
+                        ref={(el) => {
+                          bodyRefs.current[i] = el;
+                        }}
+                        className="thin-scroll min-h-0 overflow-y-auto overscroll-contain pb-8 pt-8 [mask-image:linear-gradient(to_bottom,transparent,black_2rem,black_calc(100%-2rem),transparent)]"
+                      >
+                        {sectionBodies[i]}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
-            );
-          })}
-        </div>
-
-        {/* Section indicator (desktop) */}
-        <nav
-          aria-label="Section navigation"
-          className="absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-4 md:flex lg:right-8"
-        >
-          <button
-            type="button"
-            onClick={() => goTo(active - 1)}
-            disabled={active === 0}
-            aria-label="Previous section"
-            className="p-1 text-white transition-opacity hover:opacity-70 disabled:opacity-25"
-          >
-            <ThinArrow direction="up" className="h-9 w-3" />
-          </button>
-          <div className="flex flex-col items-center gap-2 text-xs font-medium tabular-nums tracking-[0.15em]">
-            <span>{pad(active + 1)}</span>
-            <span aria-hidden className="h-px w-5 bg-white/70" />
-            <span className="text-white/60">{pad(sections.length)}</span>
+                </section>
+              );
+            })}
           </div>
-          <button
-            type="button"
-            onClick={() => goTo(active + 1)}
-            disabled={active === sections.length - 1}
-            aria-label="Next section"
-            className="p-1 text-white transition-opacity hover:opacity-70 disabled:opacity-25"
-          >
-            <ThinArrow direction="down" className="h-9 w-3" />
-          </button>
-        </nav>
-        <p className="sr-only" aria-live="polite">
-          {isDesktop ? `Section ${active + 1} of ${sections.length}: ${sections[active].title}` : ""}
-        </p>
 
-        <div className="relative z-20 flex justify-center pb-10 pt-4 md:absolute md:bottom-8 md:right-10 md:p-0">
-          <SocialLinks />
-        </div>
-      </main>
+          {/* Section indicator (desktop) */}
+          <nav
+            aria-label="Section navigation"
+            className="absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-4 md:flex lg:right-8"
+          >
+            <button
+              type="button"
+              onClick={() => goTo(active - 1)}
+              disabled={active === 0}
+              aria-label="Previous section"
+              className="p-1 text-white transition-opacity hover:opacity-70 disabled:opacity-25"
+            >
+              <ThinArrow direction="up" className="h-9 w-3" />
+            </button>
+            <div className="flex flex-col items-center gap-2 text-xs font-medium tabular-nums tracking-[0.15em]">
+              <span>{pad(active + 1)}</span>
+              <span aria-hidden className="h-px w-5 bg-white/70" />
+              <span className="text-white/60">{pad(sections.length)}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => goTo(active + 1)}
+              disabled={active === sections.length - 1}
+              aria-label="Next section"
+              className="p-1 text-white transition-opacity hover:opacity-70 disabled:opacity-25"
+            >
+              <ThinArrow direction="down" className="h-9 w-3" />
+            </button>
+          </nav>
+          <p className="sr-only" aria-live="polite">
+            {mobileHeroShown ? "" : `Section ${active + 1} of ${sections.length}: ${sections[active].title}`}
+          </p>
+
+          <div className="absolute inset-x-0 bottom-6 z-20 flex justify-center md:bottom-8 md:left-auto md:right-10">
+            <SocialLinks />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
