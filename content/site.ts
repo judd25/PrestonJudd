@@ -85,11 +85,11 @@ export const bio = {
   ],
 };
 
-/* ---------- 02 · Listen to Me ---------- */
+/* ---------- 02 · Recordings ---------- */
 
 export const listen = {
-  navLabel: "Listen",
-  title: "Listen to Me",
+  navLabel: "Recordings",
+  title: "Recordings",
   intro: "[REPLACE] A selection of recent recordings, live sessions, and original music.",
   embeds: [
     {
@@ -104,11 +104,11 @@ export const listen = {
   ] satisfies Embed[],
 };
 
-/* ---------- 03 · My Compositions ---------- */
+/* ---------- 03 · Compositions ---------- */
 
 export const compositions = {
   navLabel: "Compositions",
-  title: "My Compositions",
+  title: "Compositions",
   intro: "[REPLACE] Original works for small ensembles, brass, and mixed chamber groups.",
   works: [
     {
