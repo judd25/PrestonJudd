@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: #111;
+  color: #fff;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: #111;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.text-shadow-soft {
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.45);
+}
+
+.text-shadow-strong {
+  text-shadow: 0 2px 24px rgb(0 0 0 / 0.55);
+}
+
+/* Thin, unobtrusive scrollbars for the right-panel sections */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.25) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
