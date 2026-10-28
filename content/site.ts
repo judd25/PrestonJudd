@@ -74,9 +74,14 @@ export const bio = {
     "My playing can also be heard on screen and in games, including the soundtrack of the STARZ hit series Spartacus: House of Ashur and the video games Minecraft Legends, Honor of Kings, and League of Legends.",
   ],
   highlights: [
-    { label: "Education", value: "[REPLACE] B.M. in Jazz Performance, School Name" },
-    { label: "Ensembles", value: "[REPLACE] Ensemble One · Ensemble Two · Big Band Name" },
-    { label: "Performances", value: "[REPLACE] Venue or Festival · Venue or Festival · Venue or Festival" },
+    // A value can be one line of text, or a list in [ ] for several lines.
+    {
+      label: "Education",
+      value: [
+        "M.M. in Orchestral Performance, Manhattan School of Music",
+        "B.M. in Music Performance, Brigham Young University",
+      ],
+    },
   ],
 };
 

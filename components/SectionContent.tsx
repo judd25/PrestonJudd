@@ -48,7 +48,11 @@ export function BioSection() {
           {bio.highlights.map((h) => (
             <div key={h.label} className="grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6">
               <dt className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">{h.label}</dt>
-              <dd className="text-sm text-white/90">{h.value}</dd>
+              <dd className="space-y-1 text-sm text-white/90">
+                {(Array.isArray(h.value) ? h.value : [h.value]).map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </dd>
             </div>
           ))}
         </dl>
