@@ -220,7 +220,7 @@ export default function SiteShell() {
         </ul>
       </nav>
 
-      <LeftPanel onLearnMore={linkTo(0)} />
+      <LeftPanel />
 
       <main id="main" tabIndex={-1} className="relative min-w-0 overflow-hidden md:h-full md:w-1/2">
         <Image src="/images/concrete-texture.jpg" alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />

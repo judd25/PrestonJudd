@@ -49,11 +49,10 @@ export type FutureProject = {
 
 export const site = {
   name: "Preston Judd",
-  title: "Preston Judd | NYC Trombonist",
+  title: "Preston Judd | Utah Trombonist",
   description:
     "Preston Judd is a New York City–based trombonist and composer performing jazz, contemporary, and orchestral music.", // [REPLACE] if you'd like different wording
-  headline: ["NYC Based", "Trombonist"],
-  learnMoreLabel: "Learn More",
+  headline: ["Utah Based", "Trombonist"],
   portraitAlt: "Portrait of Preston Judd", // [REPLACE] with a more specific description of the photo
 };
 

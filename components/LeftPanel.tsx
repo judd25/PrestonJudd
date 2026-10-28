@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { site } from "@/content/site";
-import { ThinArrow } from "./Icons";
 
-export default function LeftPanel({ onLearnMore }: { onLearnMore: (e: React.MouseEvent<HTMLAnchorElement>) => void }) {
+export default function LeftPanel() {
   return (
     <header className="relative h-[70vh] min-h-[460px] w-full overflow-hidden md:h-full md:min-h-0 md:w-1/2 md:shrink-0">
       <Image
@@ -22,28 +21,14 @@ export default function LeftPanel({ onLearnMore }: { onLearnMore: (e: React.Mous
         {site.name}
       </p>
 
-      <div className="absolute inset-x-0 bottom-[12%] flex flex-col items-center px-6 text-center">
-        <h1 className="text-shadow-strong text-5xl font-extrabold uppercase leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+      <div className="absolute inset-x-0 bottom-20 flex flex-col items-center px-6 text-center">
+        <h1 className="text-shadow-strong text-[2.7rem] font-extrabold uppercase leading-[0.95] tracking-tight sm:text-[3.375rem] lg:text-[4.05rem]">
           {site.headline.map((line) => (
             <span key={line} className="block">
               {line}
             </span>
           ))}
         </h1>
-        <a
-          href="#bio"
-          onClick={onLearnMore}
-          className="mt-8 rounded-full bg-white px-8 py-3 text-xs font-bold uppercase tracking-[0.25em] text-black transition-colors hover:bg-white/85"
-        >
-          {site.learnMoreLabel}
-        </a>
-      </div>
-
-      <div aria-hidden className="absolute bottom-8 left-8 hidden flex-col items-center gap-3 md:flex">
-        <span className="text-shadow-soft rotate-180 text-[10px] uppercase tracking-[0.3em] text-white/85 [writing-mode:vertical-rl]">
-          Scroll down to switch
-        </span>
-        <ThinArrow direction="down" className="h-10 w-3 text-white/85" />
       </div>
     </header>
   );
