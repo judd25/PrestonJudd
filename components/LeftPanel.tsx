@@ -1,8 +1,12 @@
 import Image from "next/image";
 import { site } from "@/content/site";
+import { ThinArrow } from "./Icons";
 
-/** `inactive` is true on mobile while the content screen is showing, so the hidden hero can't take focus. */
-export default function LeftPanel({ inactive = false }: { inactive?: boolean }) {
+/**
+ * `inactive` is true on mobile while the content screen is showing, so the hidden hero can't take focus.
+ * `onNext` reveals the content screen (mobile down arrow).
+ */
+export default function LeftPanel({ inactive = false, onNext }: { inactive?: boolean; onNext: () => void }) {
   return (
     <header inert={inactive} className="relative h-dvh w-full shrink-0 overflow-hidden md:h-full md:w-1/2">
       <Image
@@ -25,7 +29,7 @@ export default function LeftPanel({ inactive = false }: { inactive?: boolean }) 
         {site.name}
       </p>
 
-      <div className="absolute inset-x-0 bottom-8 flex flex-col items-center px-6 text-center">
+      <div className="absolute inset-x-0 bottom-6 flex flex-col items-center px-6 text-center md:bottom-8">
         <h1 className="text-shadow-strong text-[2.7rem] font-extrabold uppercase leading-[0.95] tracking-tight sm:text-[3.375rem] lg:text-[4.05rem]">
           {site.headline.map((line) => (
             <span key={line} className="block">
@@ -33,6 +37,15 @@ export default function LeftPanel({ inactive = false }: { inactive?: boolean }) 
             </span>
           ))}
         </h1>
+        {/* Mobile only: hints that there's more below; tapping it does the same as swiping up. */}
+        <button
+          type="button"
+          onClick={onNext}
+          aria-label="Show bio and more"
+          className="mt-5 p-2 text-white/90 md:hidden"
+        >
+          <ThinArrow direction="down" className="h-10 w-4 motion-safe:animate-bounce" />
+        </button>
       </div>
     </header>
   );

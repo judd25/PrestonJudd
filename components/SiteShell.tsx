@@ -228,7 +228,7 @@ export default function SiteShell() {
           heroShown ? "translate-y-0" : "-translate-y-1/2"
         }`}
       >
-        <LeftPanel inactive={!isDesktop && !heroShown} />
+        <LeftPanel inactive={!isDesktop && !heroShown} onNext={() => goTo(active)} />
 
         <main
           id="main"
@@ -243,7 +243,7 @@ export default function SiteShell() {
             sizes="(min-width: 768px) 50vw, 200vw"
             className="object-cover"
           />
-          <div aria-hidden className="absolute inset-0 bg-black/45" />
+          <div aria-hidden className="absolute inset-0 bg-black/60" />
 
           {/* Mobile section nav */}
           <nav aria-label="Sections" className="absolute inset-x-0 top-0 z-20 md:hidden">
