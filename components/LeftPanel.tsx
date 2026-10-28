@@ -21,7 +21,7 @@ export default function LeftPanel() {
         {site.name}
       </p>
 
-      <div className="absolute inset-x-0 bottom-20 flex flex-col items-center px-6 text-center">
+      <div className="absolute inset-x-0 bottom-8 flex flex-col items-center px-6 text-center">
         <h1 className="text-shadow-strong text-[2.7rem] font-extrabold uppercase leading-[0.95] tracking-tight sm:text-[3.375rem] lg:text-[4.05rem]">
           {site.headline.map((line) => (
             <span key={line} className="block">

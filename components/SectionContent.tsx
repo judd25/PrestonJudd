@@ -2,9 +2,10 @@ import { bio, compositions, futureProjects, listen } from "@/content/site";
 import type { Composition, FutureProject } from "@/content/site";
 import Embed from "./Embed";
 
-function SectionHeader({ number, title, id, intro }: { number: number; title: string; id: string; intro?: string }) {
+/** Number, title, and rule. Rendered outside the scroll area so it stays put on desktop. */
+export function SectionHeader({ number, title, id }: { number: number; title: string; id: string }) {
   return (
-    <header className="mb-10">
+    <header>
       <p className="mb-3 text-xs font-medium tracking-[0.3em] text-white/60">
         {String(number).padStart(2, "0")}
       </p>
@@ -12,9 +13,12 @@ function SectionHeader({ number, title, id, intro }: { number: number; title: st
         {title}
       </h2>
       <span aria-hidden className="mt-5 block h-px w-12 bg-white/70" />
-      {intro && <p className="mt-6 text-sm leading-relaxed text-white/70">{intro}</p>}
     </header>
   );
+}
+
+function Intro({ text }: { text?: string }) {
+  return text ? <p className="mb-10 text-sm leading-relaxed text-white/70">{text}</p> : null;
 }
 
 function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -31,10 +35,9 @@ function TextLink({ href, children }: { href: string; children: React.ReactNode 
   );
 }
 
-export function BioSection({ titleId }: { titleId: string }) {
+export function BioSection() {
   return (
     <>
-      <SectionHeader number={1} title={bio.title} id={titleId} />
       <div className="space-y-5 text-[15px] leading-relaxed text-white/85">
         {bio.paragraphs.map((p, i) => (
           <p key={i}>{p}</p>
@@ -54,10 +57,10 @@ export function BioSection({ titleId }: { titleId: string }) {
   );
 }
 
-export function ListenSection({ titleId }: { titleId: string }) {
+export function ListenSection() {
   return (
     <>
-      <SectionHeader number={2} title={listen.title} id={titleId} intro={listen.intro} />
+      <Intro text={listen.intro} />
       <div className="space-y-6">
         {listen.embeds.map((embed, i) => (
           <div key={i} className="overflow-hidden border border-white/15 bg-black/30 p-2 shadow-2xl shadow-black/40">
@@ -69,10 +72,10 @@ export function ListenSection({ titleId }: { titleId: string }) {
   );
 }
 
-export function CompositionsSection({ titleId }: { titleId: string }) {
+export function CompositionsSection() {
   return (
     <>
-      <SectionHeader number={3} title={compositions.title} id={titleId} intro={compositions.intro} />
+      <Intro text={compositions.intro} />
       <ul className="space-y-5">
         {(compositions.works as Composition[]).map((work) => (
           <li key={work.title} className="border border-white/15 bg-black/20 p-6">
@@ -107,7 +110,7 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
 });
 
 /** `today` is "YYYY-MM-DD", or null before the browser has mounted (everything is treated as upcoming). */
-export function FutureSection({ titleId, today }: { titleId: string; today: string | null }) {
+export function FutureSection({ today }: { today: string | null }) {
   const isPast = (p: FutureProject) => today !== null && p.date < today;
   const sorted = [...(futureProjects.projects as FutureProject[])].sort((a, b) => a.date.localeCompare(b.date));
   const upcoming = sorted.filter((p) => !isPast(p));
@@ -116,7 +119,7 @@ export function FutureSection({ titleId, today }: { titleId: string; today: stri
 
   return (
     <>
-      <SectionHeader number={4} title={futureProjects.title} id={titleId} intro={futureProjects.intro} />
+      <Intro text={futureProjects.intro} />
       {upcoming.length === 0 && <p className="mb-6 text-sm text-white/70">{futureProjects.emptyMessage}</p>}
       <ul className="divide-y divide-white/15 border-y border-white/15">
         {items.map((p) => {

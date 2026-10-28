@@ -70,9 +70,8 @@ export const bio = {
   navLabel: "Bio",
   title: "Bio",
   paragraphs: [
-    "[REPLACE] Preston Judd is a trombonist and composer based in New York City whose playing moves easily between modern jazz, contemporary chamber music, and the orchestral stage. Known for a warm, vocal sound and an adventurous approach to improvisation, he performs regularly in venues across the city.",
-    "[REPLACE] Originally from [hometown], Preston began playing trombone at age [age] and went on to study at [school], where he worked with [teachers]. Since moving to New York he has performed with [ensembles/artists], and appeared at [venues/festivals].",
-    "[REPLACE] Alongside performing, Preston writes music for small ensembles and brass, and teaches privately. His current projects explore [short description of your artistic focus].",
+    "I'm a freelance bass trombonist based in New York City and Utah. I've performed with premier ensembles including the Utah Symphony & Opera and Boston Brass, and shared the stage with artists such as the Beach Boys, Celtic Woman, Leslie Odom Jr., Storm Large, Joshua Henry, Byron Stripling, Christopher Bill, and Wycliffe Gordon.",
+    "My playing can also be heard on screen and in games, including the soundtrack of the STARZ hit series Spartacus: House of Ashur and the video games Minecraft Legends, Honor of Kings, and League of Legends.",
   ],
   highlights: [
     { label: "Education", value: "[REPLACE] B.M. in Jazz Performance, School Name" },

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import LeftPanel from "./LeftPanel";
 import SocialLinks from "./SocialLinks";
 import { ThinArrow } from "./Icons";
-import { BioSection, CompositionsSection, FutureSection, ListenSection } from "./SectionContent";
+import { BioSection, CompositionsSection, FutureSection, ListenSection, SectionHeader } from "./SectionContent";
 import { indexFromHash, sections } from "./sections";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -49,6 +49,8 @@ export default function SiteShell() {
   const [today, setToday] = useState<string | null>(null);
   const activeRef = useRef(0);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  /** The scrollable content area under each section's fixed header (desktop). */
+  const bodyRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   activeRef.current = active;
 
@@ -88,13 +90,15 @@ export default function SiteShell() {
   useEffect(() => {
     if (!isDesktop) return;
 
-    let gestureConsumed = false;
+    // Each wheel gesture either scrolls the section's content or switches sections, never both.
+    let gestureMode: "scroll" | "switch" | null = null;
     let idleTimer: number | undefined;
     let lockUntil = 0;
     let touchStartY: number | null = null;
     let touchStartScrollable = false;
 
     const activeSection = () => sectionRefs.current[activeRef.current];
+    const activeBody = () => bodyRefs.current[activeRef.current];
 
     const trySwitch = (dir: number) => {
       const now = performance.now();
@@ -106,21 +110,31 @@ export default function SiteShell() {
     const onWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || Math.abs(e.deltaY) < 2) return;
       window.clearTimeout(idleTimer);
-      idleTimer = window.setTimeout(() => (gestureConsumed = false), GESTURE_IDLE_MS);
-      if (gestureConsumed) return;
-      gestureConsumed = true;
+      idleTimer = window.setTimeout(() => (gestureMode = null), GESTURE_IDLE_MS);
+      if (gestureMode === "switch") return;
 
       const dir = e.deltaY > 0 ? 1 : -1;
-      const el = activeSection();
-      // Let long sections scroll natively until they reach their edge.
-      if (el && el.contains(e.target as Node) && canScroll(el, dir)) return;
+      const target = e.target as Node;
+      const body = activeBody();
+      const inSection = !!activeSection()?.contains(target);
+      // Long content scrolls until it reaches its edge; only a fresh gesture then switches.
+      if (gestureMode === "scroll" || (inSection && body && canScroll(body, dir))) {
+        gestureMode = "scroll";
+        // Over the fixed header the browser won't scroll the content itself, so do it here.
+        if (inSection && body && !body.contains(target)) {
+          body.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY });
+        }
+        return;
+      }
+      gestureMode = "switch";
       trySwitch(dir);
     };
 
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
-      const el = activeSection();
-      touchStartScrollable = !!el && el.contains(e.target as Node) && el.scrollHeight > el.clientHeight;
+      const body = activeBody();
+      touchStartScrollable =
+        !!body && !!activeSection()?.contains(e.target as Node) && body.scrollHeight > body.clientHeight;
     };
 
     const onTouchEnd = (e: TouchEvent) => {
@@ -129,8 +143,8 @@ export default function SiteShell() {
       touchStartY = null;
       if (Math.abs(dy) < SWIPE_THRESHOLD_PX) return;
       const dir = dy > 0 ? 1 : -1;
-      const el = activeSection();
-      if (touchStartScrollable && el && canScroll(el, dir)) return;
+      const body = activeBody();
+      if (touchStartScrollable && body && canScroll(body, dir)) return;
       trySwitch(dir);
     };
 
@@ -145,7 +159,7 @@ export default function SiteShell() {
       if (!dir) return;
       e.preventDefault();
 
-      const el = activeSection();
+      const el = activeBody();
       if (el && canScroll(el, dir)) {
         const step = e.key.startsWith("Page") ? el.clientHeight * 0.85 : 80;
         el.scrollBy({ top: dir * step, behavior: prefersReducedMotion() ? "auto" : "smooth" });
@@ -183,10 +197,10 @@ export default function SiteShell() {
   }, [isDesktop]);
 
   const sectionBodies = [
-    <BioSection key="bio" titleId="bio-title" />,
-    <ListenSection key="listen" titleId="listen-title" />,
-    <CompositionsSection key="compositions" titleId="compositions-title" />,
-    <FutureSection key="future-projects" titleId="future-projects-title" today={today} />,
+    <BioSection key="bio" />,
+    <ListenSection key="listen" />,
+    <CompositionsSection key="compositions" />,
+    <FutureSection key="future-projects" today={today} />,
   ];
 
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -249,10 +263,21 @@ export default function SiteShell() {
                 }}
                 aria-labelledby={`${s.id}-title`}
                 inert={isDesktop && !isActive}
-                className={`thin-scroll relative scroll-mt-12 md:absolute md:inset-0 md:overflow-y-auto md:overscroll-contain md:[mask-image:linear-gradient(to_bottom,transparent,black_2rem,black_calc(100%-2rem),transparent)] md:transition-[opacity,translate,visibility] md:duration-500 md:ease-out ${state}`}
+                className={`relative scroll-mt-12 md:absolute md:inset-0 md:transition-[opacity,translate,visibility] md:duration-500 md:ease-out ${state}`}
               >
-                <div className="flex min-h-full flex-col justify-center px-6 py-16 md:px-16 md:py-12 lg:px-24">
-                  <div className="mx-auto w-full max-w-[640px]">{sectionBodies[i]}</div>
+                {/* Short sections stay vertically centered; tall ones fill the height and scroll below the header. */}
+                <div className="flex flex-col justify-center px-6 py-16 md:h-full md:px-16 md:py-6 lg:px-24">
+                  <div className="mx-auto flex w-full max-w-[640px] flex-col md:max-h-full">
+                    <SectionHeader number={i + 1} title={s.title} id={`${s.id}-title`} />
+                    <div
+                      ref={(el) => {
+                        bodyRefs.current[i] = el;
+                      }}
+                      className="thin-scroll pt-10 md:min-h-0 md:overflow-y-auto md:overscroll-contain md:pb-8 md:pt-8 md:[mask-image:linear-gradient(to_bottom,transparent,black_2rem,black_calc(100%-2rem),transparent)]"
+                    >
+                      {sectionBodies[i]}
+                    </div>
+                  </div>
                 </div>
               </section>
             );
