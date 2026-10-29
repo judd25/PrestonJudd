@@ -252,17 +252,17 @@ export default function SiteShell() {
           />
           <div aria-hidden className="absolute inset-0 bg-black/60" />
 
-          {/* Mobile section nav */}
-          <nav aria-label="Sections" className="absolute inset-x-0 top-0 z-20 md:hidden">
-            <ul className="flex items-center justify-between px-6 py-5">
+          {/* Section nav; on wide screens it lines up with the content column below */}
+          <nav aria-label="Sections" className="absolute inset-x-0 top-0 z-20 xl:px-24">
+            <ul className="flex items-center justify-between gap-4 px-6 py-5 md:py-8 lg:px-10 xl:mx-auto xl:max-w-[640px] xl:px-0">
               {sections.map((s, i) => (
                 <li key={s.id}>
                   <a
                     href={`#${s.id}`}
                     onClick={linkTo(i)}
                     aria-current={active === i ? "true" : undefined}
-                    className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors ${
-                      active === i ? "text-white underline underline-offset-4" : "text-white/65"
+                    className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors md:tracking-[0.15em] lg:text-xs xl:tracking-[0.2em] ${
+                      active === i ? "text-white underline underline-offset-4" : "text-white/65 hover:text-white"
                     }`}
                   >
                     {s.label}
@@ -271,14 +271,6 @@ export default function SiteShell() {
               ))}
             </ul>
           </nav>
-
-          <a
-            href="#bio"
-            onClick={linkTo(0)}
-            className="absolute right-10 top-8 z-20 hidden text-xs font-semibold uppercase tracking-[0.3em] underline decoration-1 underline-offset-[6px] md:block"
-          >
-            About
-          </a>
 
           {/* Inset top and bottom so scrolling content clips before the nav/ABOUT link and social icons */}
           <div className="absolute inset-x-0 bottom-16 top-14 md:bottom-20 md:top-20">
