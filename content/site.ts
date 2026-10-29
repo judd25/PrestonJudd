@@ -70,12 +70,15 @@ export const site = {
   portraitAlt: "Portrait of Preston Judd", // [REPLACE] with a more specific description of the photo
 };
 
-/** Social links: replace the placeholder URLs. Remove a line to hide that icon. */
+/**
+ * Social links shown as icons. Lines starting with // are hidden: to show one, remove the //
+ * and replace its placeholder URL.
+ */
 export const socialLinks = {
-  youtube: "https://www.youtube.com/@REPLACE",
-  facebook: "https://www.facebook.com/REPLACE",
-  soundcloud: "https://soundcloud.com/REPLACE",
-  instagram: "https://www.instagram.com/REPLACE",
+  // youtube: "https://www.youtube.com/@REPLACE",
+  // facebook: "https://www.facebook.com/REPLACE",
+  soundcloud: "https://soundcloud.com/prestonedwardjudd",
+  // instagram: "https://www.instagram.com/REPLACE",
 } satisfies Partial<Record<"youtube" | "facebook" | "soundcloud" | "instagram", string>>;
 
 /* ---------- 01 · Bio ---------- */
