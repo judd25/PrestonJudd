@@ -94,7 +94,7 @@ export const bio = {
 export const listen = {
   navLabel: "Recordings",
   title: "Recordings",
-  intro: "A selection of recent recordings, live sessions, and original music.",
+  intro: "", // Optional line shown above the players; leave empty to hide it.
   embeds: [
     {
       type: "spotify",
