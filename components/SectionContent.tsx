@@ -1,6 +1,7 @@
 import { bio, compositions, futureProjects, listen } from "@/content/site";
 import type { Composition, FutureProject } from "@/content/site";
 import Embed from "./Embed";
+import SoundCloudPopupLink from "./SoundCloudPopupLink";
 
 /** Number, title, and rule. Rendered outside the scroll area so it stays put on desktop. */
 export function SectionHeader({ number, title, id }: { number: number; title: string; id: string }) {
@@ -21,16 +22,27 @@ function Intro({ text }: { text?: string }) {
   return text ? <p className="mb-10 text-sm leading-relaxed text-white/70">{text}</p> : null;
 }
 
-function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] underline decoration-white/40 underline-offset-4 transition-colors hover:decoration-white"
-    >
+const textLinkClass =
+  "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] underline decoration-white/40 underline-offset-4 transition-colors hover:decoration-white";
+
+/** External link; SoundCloud links open a pop-up player instead when `popupTitle` is given. */
+function TextLink({ href, popupTitle, children }: { href: string; popupTitle?: string; children: React.ReactNode }) {
+  const content = (
+    <>
       {children}
       <span aria-hidden>→</span>
+    </>
+  );
+  if (popupTitle && /^https:\/\/(www\.|m\.)?soundcloud\.com\//.test(href)) {
+    return (
+      <SoundCloudPopupLink href={href} title={popupTitle} className={textLinkClass}>
+        {content}
+      </SoundCloudPopupLink>
+    );
+  }
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={textLinkClass}>
+      {content}
     </a>
   );
 }
@@ -67,7 +79,7 @@ export function ListenSection() {
       <Intro text={listen.intro} />
       <div className="space-y-6">
         {listen.embeds.map((embed, i) => (
-          <div key={i} className="overflow-hidden border border-white/15 bg-black/30 p-2 shadow-2xl shadow-black/40">
+          <div key={i} className="overflow-hidden rounded-2xl border border-white/15 bg-black/30 p-2 shadow-2xl shadow-black/40">
             <Embed embed={embed} />
           </div>
         ))}
@@ -96,7 +108,9 @@ export function CompositionsSection() {
             )}
             {work.link && (
               <p className="mt-5">
-                <TextLink href={work.link.href}>{work.link.label}</TextLink>
+                <TextLink href={work.link.href} popupTitle={work.title}>
+                  {work.link.label}
+                </TextLink>
               </p>
             )}
           </li>

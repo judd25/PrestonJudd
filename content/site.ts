@@ -19,6 +19,14 @@ export type Embed =
       height?: number;
     }
   | {
+      type: "spotify";
+      /** The Spotify share link of a playlist, album, track, artist, or podcast, e.g. https://open.spotify.com/playlist/… */
+      url: string;
+      title: string;
+      /** Player height in px. 352 shows a track list; 152 is the compact player. */
+      height?: number;
+    }
+  | {
       type: "youtube";
       /** Any YouTube URL (watch?v=…, youtu.be/…, or embed/…) or just the video ID. */
       url: string;
@@ -26,6 +34,9 @@ export type Embed =
     };
 
 export type Link = { label: string; href: string };
+
+/** A labeled row under the bio. `value` can be one line, or a list in [ ] for several lines. */
+export type Highlight = { label: string; value: string | string[] };
 
 export type Composition = {
   title: string;
@@ -73,16 +84,9 @@ export const bio = {
     "I'm a freelance bass trombonist based in New York City and Utah. I've performed with premier ensembles including the Utah Symphony & Opera and Boston Brass, and shared the stage with artists such as the Beach Boys, Celtic Woman, Leslie Odom Jr., Storm Large, Joshua Henry, Byron Stripling, Christopher Bill, and Wycliffe Gordon.",
     "My playing can also be heard on screen and in games, including the soundtrack of the STARZ hit series Spartacus: House of Ashur and the video games Minecraft Legends, Honor of Kings, and League of Legends.",
   ],
-  highlights: [
-    // A value can be one line of text, or a list in [ ] for several lines.
-    {
-      label: "Education",
-      value: [
-        "M.M. in Orchestral Performance, Manhattan School of Music",
-        "B.M. in Music Performance, Brigham Young University",
-      ],
-    },
-  ],
+  // Optional labeled rows shown under the bio. Leave empty to hide them. Example:
+  // { label: "Education", value: ["M.M. in Orchestral Performance, Manhattan School of Music", "B.M. in Music Performance, Brigham Young University"] },
+  highlights: [] as Highlight[],
 };
 
 /* ---------- 02 · Recordings ---------- */
@@ -90,17 +94,17 @@ export const bio = {
 export const listen = {
   navLabel: "Recordings",
   title: "Recordings",
-  intro: "[REPLACE] A selection of recent recordings, live sessions, and original music.",
+  intro: "A selection of recent recordings, live sessions, and original music.",
   embeds: [
     {
-      type: "soundcloud",
-      // [REPLACE] with your SoundCloud playlist URL
-      url: "https://soundcloud.com/soundcloud-scenes/sets/jazz-classics",
-      title: "Preston Judd on SoundCloud",
-      height: 360,
+      type: "spotify",
+      url: "https://open.spotify.com/playlist/3joPhu3z43URQ4y15n7rWj",
+      title: "Preston Judd recordings on Spotify",
+      height: 352,
     },
     // Add more players here, for example:
     // { type: "youtube", url: "https://www.youtube.com/watch?v=VIDEO_ID", title: "Live at Venue" },
+    // { type: "soundcloud", url: "https://soundcloud.com/user/sets/playlist-name", title: "SoundCloud playlist" },
   ] satisfies Embed[],
 };
 
@@ -109,31 +113,40 @@ export const listen = {
 export const compositions = {
   navLabel: "Compositions",
   title: "Compositions",
-  intro: "[REPLACE] Original works for small ensembles, brass, and mixed chamber groups.",
+  intro: "Original works for small ensembles featuring electronic instruments",
+  // A SoundCloud link opens a pop-up player; any other link opens in a new tab.
   works: [
     {
-      title: "[REPLACE] Hudson Light",
-      year: 2025,
-      instrumentation: "Trombone, tenor sax, piano, bass, drums",
+      title: "Dillon",
+      year: 2021,
+      instrumentation: "Bass Trombone, Piano, Synth, Drums",
       description:
-        "[REPLACE] A slow-burning ballad inspired by early evenings on the Hudson River, built around a long-lined trombone melody.",
-      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/REPLACE" },
+        "During the pandemic I learned DnD and my first character was a Necromancer named Dillon. This composition depicted him.",
+      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/dillon" },
     },
     {
-      title: "[REPLACE] Concrete Etudes",
-      year: 2024,
-      instrumentation: "Solo trombone",
+      title: "The Moth",
+      year: 2017,
+      instrumentation: "Piano, Strings, Bass, Synthesizer",
       description:
-        "[REPLACE] A set of three short studies exploring multiphonics, extended slide technique, and the resonance of empty rooms.",
+        "I wrote this piece for a MOTH competition and I took it very literally not knowing that company featured space exploration, not metamorphosis.",
+      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/the-moth" },
     },
     {
-      title: "[REPLACE] Subway Chorale",
-      year: 2023,
-      instrumentation: "Brass quintet",
+      title: "POW",
+      year: 2016,
+      instrumentation: "Voice, Synthesizer, Bass, Drums",
       description:
-        "[REPLACE] A chorale for brass quintet that layers fragments of overheard city rhythms into a slowly unfolding harmony.",
-      // Optional embed example:
-      // embed: { type: "youtube", url: "https://youtu.be/VIDEO_ID", title: "Subway Chorale performance" },
+        "I have a lot of respect for those who have sacrificed so much for our freedom. This piece depicts the sacrifice and tenacity of American prisoners of war throughout the ages.",
+      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/pow" },
+    },
+    {
+      title: "Capture the Flag",
+      year: 2016,
+      instrumentation: "Cello, Bass, Synth, Piano, Electric Bass, Drums",
+      description:
+        "As a kid, I loved me a good game of capture the flag and this was the theme I always played in my head as I attempted to sneak my opponent's flag.",
+      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/capture-the-flag" },
     },
   ] satisfies Composition[],
 };

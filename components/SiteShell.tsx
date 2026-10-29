@@ -109,6 +109,8 @@ export default function SiteShell() {
     let touchStartScrollable = false;
 
     const onContentScreen = () => isDesktopNow() || !heroShownRef.current;
+    // While a pop-up (e.g. the SoundCloud player) is open, gestures and keys belong to it.
+    const popupOpen = () => !!document.querySelector("dialog[open]");
     const activeSection = () => (onContentScreen() ? sectionRefs.current[activeRef.current] : null);
     const activeBody = () => (onContentScreen() ? bodyRefs.current[activeRef.current] : null);
 
@@ -128,6 +130,7 @@ export default function SiteShell() {
     };
 
     const onWheel = (e: WheelEvent) => {
+      if (popupOpen()) return;
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || Math.abs(e.deltaY) < 2) return;
       window.clearTimeout(idleTimer);
       idleTimer = window.setTimeout(() => (gestureMode = null), GESTURE_IDLE_MS);
@@ -151,6 +154,10 @@ export default function SiteShell() {
     };
 
     const onTouchStart = (e: TouchEvent) => {
+      if (popupOpen()) {
+        touchStartY = null;
+        return;
+      }
       touchStartY = e.touches[0].clientY;
       const body = activeBody();
       touchStartScrollable =
@@ -169,7 +176,7 @@ export default function SiteShell() {
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (popupOpen() || e.altKey || e.ctrlKey || e.metaKey) return;
       const target = e.target as HTMLElement;
       if (target.closest("input, textarea, select, [contenteditable='true']")) return;
 
