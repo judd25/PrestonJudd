@@ -49,7 +49,10 @@ export type Composition = {
 
 export type FutureProject = {
   title: string;
-  /** ISO format: "YYYY-MM-DD" */
+  /**
+   * "YYYY-MM-DD" for an exact day (shows "Dec 12, 2026"), "YYYY-MM" for a month (shows "Dec 2026"),
+   * or any other text such as "TBD", shown as written. Dated projects sort first; others follow in list order.
+   */
   date: string;
   location?: string;
   description: string;
@@ -122,7 +125,7 @@ export const compositions = {
       instrumentation: "Bass Trombone, Piano, Synth, Drums",
       description:
         "During the pandemic I learned DnD and my first character was a Necromancer named Dillon. This composition depicted him.",
-      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/dillon" },
+      link: { label: "Listen", href: "https://soundcloud.com/prestonedwardjudd/dillon" },
     },
     {
       title: "The Moth",
@@ -130,7 +133,7 @@ export const compositions = {
       instrumentation: "Piano, Strings, Bass, Synthesizer",
       description:
         "I wrote this piece for a MOTH competition and I took it very literally not knowing that company featured space exploration, not metamorphosis.",
-      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/the-moth" },
+      link: { label: "Listen", href: "https://soundcloud.com/prestonedwardjudd/the-moth" },
     },
     {
       title: "POW",
@@ -138,7 +141,7 @@ export const compositions = {
       instrumentation: "Voice, Synthesizer, Bass, Drums",
       description:
         "I have a lot of respect for those who have sacrificed so much for our freedom. This piece depicts the sacrifice and tenacity of American prisoners of war throughout the ages.",
-      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/pow" },
+      link: { label: "Listen", href: "https://soundcloud.com/prestonedwardjudd/pow" },
     },
     {
       title: "Capture the Flag",
@@ -146,7 +149,7 @@ export const compositions = {
       instrumentation: "Cello, Bass, Synth, Piano, Electric Bass, Drums",
       description:
         "As a kid, I loved me a good game of capture the flag and this was the theme I always played in my head as I attempted to sneak my opponent's flag.",
-      link: { label: "Listen on SoundCloud", href: "https://soundcloud.com/prestonedwardjudd/capture-the-flag" },
+      link: { label: "Listen", href: "https://soundcloud.com/prestonedwardjudd/capture-the-flag" },
     },
   ] satisfies Composition[],
 };
@@ -156,34 +159,29 @@ export const compositions = {
 export const futureProjects = {
   navLabel: "Future",
   title: "Future Projects",
-  intro: "[REPLACE] Upcoming concerts, recordings, and collaborations.",
+  intro: "Upcoming concerts, recordings, and collaborations.",
   /** What to do with entries whose date has passed: "completed" shows them with a Completed tag, "hide" removes them. */
   pastProjects: "completed" as "completed" | "hide",
   emptyMessage: "New dates coming soon.",
   projects: [
     {
-      title: "[REPLACE] Quintet Album Release Show",
-      date: "2026-12-12",
-      location: "[REPLACE] Venue Name, Brooklyn NY",
-      description: "[REPLACE] Celebrating the release of the debut quintet record with a full live performance.",
-      link: { label: "Tickets", href: "https://example.com/REPLACE" },
+      title: "I Wonder as I Wander - Single",
+      date: "2026-12",
+      location: "Virtual Release",
+      description: "Festive arrangement of a Christmas classic for Horn, Bass Trombone, Synth",
     },
     {
-      title: "[REPLACE] Debut Album Recording Session",
-      date: "2027-02-08",
-      location: "[REPLACE] Studio Name, New York NY",
-      description: "[REPLACE] Tracking a new album of original compositions with the quintet.",
+      title: "Batter My Heart - Single",
+      date: "TBD",
+      location: "Virtual Release",
+      description:
+        "An arrangement from John Adams's 'Doctor Atomic' by my amazing wife for Bass Trombone, Woodwind Quintet, and Piano",
     },
     {
-      title: "[REPLACE] New Work for Trombone Choir",
-      date: "2027-05-20",
-      description: "[REPLACE] Premiere of a newly commissioned piece for twelve trombones.",
-    },
-    {
-      title: "[REPLACE] Summer Jazz Series",
-      date: "2026-07-18",
-      location: "[REPLACE] Park Name, Manhattan NY",
-      description: "[REPLACE] Outdoor set with the big band as part of the summer concert series.",
+      title: "Sweeney Todd: The Demon Posaune of Fleet Street",
+      date: "TBD",
+      location: "Venue - TBD",
+      description: "An adaptation of the hit broadway musical for brass band",
     },
   ] satisfies FutureProject[],
 };

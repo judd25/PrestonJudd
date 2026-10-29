@@ -120,17 +120,30 @@ export function CompositionsSection() {
   );
 }
 
-const dateFormat = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const dayFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+const monthFormat = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+
+const isDay = (date: string) => /^\d{4}-\d{2}-\d{2}$/.test(date);
+const isMonth = (date: string) => /^\d{4}-\d{2}$/.test(date);
+
+/** "2026-12-12" → "Dec 12, 2026", "2026-12" → "Dec 2026", anything else (e.g. "TBD") as written. */
+function formatProjectDate(date: string) {
+  if (isDay(date)) return dayFormat.format(new Date(`${date}T00:00:00Z`));
+  if (isMonth(date)) return monthFormat.format(new Date(`${date}-01T00:00:00Z`));
+  return date;
+}
 
 /** `today` is "YYYY-MM-DD", or null before the browser has mounted (everything is treated as upcoming). */
 export function FutureSection({ today }: { today: string | null }) {
-  const isPast = (p: FutureProject) => today !== null && p.date < today;
-  const sorted = [...(futureProjects.projects as FutureProject[])].sort((a, b) => a.date.localeCompare(b.date));
+  // A month counts as past only once it has ended; undated projects ("TBD") never do.
+  const isPast = (p: FutureProject) =>
+    today !== null && (isDay(p.date) ? p.date < today : isMonth(p.date) && p.date < today.slice(0, 7));
+  // Dated projects in date order, then undated ones in the order they're listed (sort is stable).
+  const sortKey = (p: FutureProject) => (isDay(p.date) || isMonth(p.date) ? p.date : "~");
+  const sorted = [...(futureProjects.projects as FutureProject[])].sort((a, b) => {
+    const [ka, kb] = [sortKey(a), sortKey(b)];
+    return ka < kb ? -1 : ka > kb ? 1 : 0; // plain character order, so "~" lands after every date
+  });
   const upcoming = sorted.filter((p) => !isPast(p));
   const past = futureProjects.pastProjects === "completed" ? sorted.filter(isPast).reverse() : [];
   const items = [...upcoming, ...past];
@@ -145,9 +158,13 @@ export function FutureSection({ today }: { today: string | null }) {
           return (
             <li key={p.title + p.date} className={`grid gap-2 py-6 sm:grid-cols-[8rem_1fr] sm:gap-6 ${done ? "opacity-55" : ""}`}>
               <div>
-                <time dateTime={p.date} className="text-xs font-medium uppercase tracking-[0.2em] text-white/80">
-                  {dateFormat.format(new Date(`${p.date}T00:00:00Z`))}
-                </time>
+                {isDay(p.date) || isMonth(p.date) ? (
+                  <time dateTime={p.date} className="text-xs font-medium uppercase tracking-[0.2em] text-white/80">
+                    {formatProjectDate(p.date)}
+                  </time>
+                ) : (
+                  <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/80">{p.date}</span>
+                )}
                 {done && (
                   <span className="mt-2 inline-block border border-white/40 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]">
                     Completed
