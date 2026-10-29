@@ -61,7 +61,8 @@ export default function Embed({ embed, autoPlay = false }: { embed: EmbedConfig;
     <iframe
       src={soundCloudSrc(embed.url, autoPlay)}
       title={embed.title}
-      loading="lazy"
+      // An autoplaying player is on screen right away, so don't defer it.
+      loading={autoPlay ? "eager" : "lazy"}
       allow="autoplay"
       height={embed.height ?? 166}
       className="block w-full border-0 bg-white"

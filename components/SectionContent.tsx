@@ -22,14 +22,16 @@ function Intro({ text }: { text?: string }) {
   return text ? <p className="mb-10 text-sm leading-relaxed text-white/70">{text}</p> : null;
 }
 
-const textLinkClass =
-  "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] underline decoration-white/40 underline-offset-4 transition-colors hover:decoration-white";
+const textLinkClass = "group inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]";
 
 /** External link; SoundCloud links open a pop-up player instead when `popupTitle` is given. */
 function TextLink({ href, popupTitle, children }: { href: string; popupTitle?: string; children: React.ReactNode }) {
+  // Only the label is underlined; the arrow sits beside it without a line.
   const content = (
     <>
-      {children}
+      <span className="underline decoration-white/40 underline-offset-4 transition-colors group-hover:decoration-white">
+        {children}
+      </span>
       <span aria-hidden>→</span>
     </>
   );
