@@ -66,7 +66,7 @@ export const site = {
   title: "Preston Judd | Utah Trombonist",
   description:
     "Preston Judd is a New York City–based trombonist and composer performing jazz, contemporary, and orchestral music.", // [REPLACE] if you'd like different wording
-  headline: ["Utah Based", "Trombonist"],
+  headline: ["Utah-based", "Trombonist"],
   portraitAlt: "Portrait of Preston Judd", // [REPLACE] with a more specific description of the photo
 };
 
