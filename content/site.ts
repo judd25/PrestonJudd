@@ -28,7 +28,7 @@ export type Embed =
     }
   | {
       type: "youtube";
-      /** Any YouTube URL (watch?v=…, youtu.be/…, or embed/…) or just the video ID. */
+      /** Any YouTube video or playlist URL (watch?v=…, youtu.be/…, playlist?list=…) or just the video ID. */
       url: string;
       title: string;
     };
@@ -103,13 +103,12 @@ export const listen = {
   intro: "", // Optional line shown above the players; leave empty to hide it.
   embeds: [
     {
-      type: "spotify",
-      url: "https://open.spotify.com/playlist/3joPhu3z43URQ4y15n7rWj",
-      title: "Preston Judd recordings on Spotify",
-      height: 352,
+      type: "youtube",
+      url: "https://youtube.com/playlist?list=PLGnyDDQC7yVA",
+      title: "Preston Judd recordings on YouTube",
     },
     // Add more players here, for example:
-    // { type: "youtube", url: "https://www.youtube.com/watch?v=VIDEO_ID", title: "Live at Venue" },
+    // { type: "spotify", url: "https://open.spotify.com/playlist/3joPhu3z43URQ4y15n7rWj", title: "Preston Judd recordings on Spotify", height: 352 },
     // { type: "soundcloud", url: "https://soundcloud.com/user/sets/playlist-name", title: "SoundCloud playlist" },
   ] satisfies Embed[],
 };

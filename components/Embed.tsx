@@ -1,8 +1,12 @@
 import type { Embed as EmbedConfig } from "@/content/site";
 
-function youTubeId(url: string): string {
-  const match = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
-  return match ? match[1] : url;
+/** Embed URL for a YouTube video, a playlist (…?list=…), or a video within a playlist. */
+function youTubeSrc(url: string): string {
+  const video = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
+  const list = url.match(/[?&]list=([\w-]+)/)?.[1];
+  const base = "https://www.youtube-nocookie.com/embed/";
+  if (list) return `${base}${video ?? "videoseries"}?list=${list}`;
+  return base + (video ?? url);
 }
 
 function soundCloudSrc(url: string, autoPlay: boolean): string {
@@ -44,9 +48,9 @@ export default function Embed({ embed, autoPlay = false }: { embed: EmbedConfig;
 
   if (embed.type === "youtube") {
     return (
-      <div className="relative aspect-video w-full overflow-hidden bg-black/40">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black/40">
         <iframe
-          src={`https://www.youtube-nocookie.com/embed/${youTubeId(embed.url)}`}
+          src={youTubeSrc(embed.url)}
           title={embed.title}
           loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
