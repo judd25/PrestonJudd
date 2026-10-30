@@ -56,6 +56,8 @@ export default function SiteShell() {
   /** Mobile only: whether the portrait screen is showing instead of the content panel. */
   const [heroShown, setHeroShown] = useState(true);
   const [today, setToday] = useState<string | null>(null);
+  /** Desktop only: the "next section" arrow bounces until the visitor first changes section. */
+  const [nudge, setNudge] = useState(true);
   const activeRef = useRef(0);
   const heroShownRef = useRef(true);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
@@ -74,6 +76,7 @@ export default function SiteShell() {
     if (index < 0 || index >= sections.length) return;
     setActive(index);
     setHeroShown(false);
+    setNudge(false);
     history.replaceState(null, "", `#${sections[index].id}`);
   }, []);
 
@@ -88,6 +91,7 @@ export default function SiteShell() {
     if (index >= 0) {
       setActive(index);
       setHeroShown(false);
+      if (index > 0) setNudge(false);
     }
     setToday(localDateString());
 
@@ -334,7 +338,7 @@ export default function SiteShell() {
               aria-label="Next section"
               className="p-1 text-white transition-opacity hover:opacity-70 disabled:opacity-25"
             >
-              <ThinArrow direction="down" className="h-9 w-3" />
+              <ThinArrow direction="down" className={`h-9 w-3 ${nudge ? "motion-safe:animate-bounce" : ""}`} />
             </button>
           </nav>
           <p className="sr-only" aria-live="polite">
