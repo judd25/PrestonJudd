@@ -180,7 +180,7 @@ export const compositions = {
 
 export const futureProjects = {
   navLabel: "Upcoming",
-  title: "Future Projects",
+  title: "Upcoming Projects",
   intro: "Upcoming concerts, recordings, and collaborations.",
   /** What to do with entries whose date has passed: "completed" shows them with a Completed tag, "hide" removes them. */
   pastProjects: "completed" as "completed" | "hide",
