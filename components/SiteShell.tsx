@@ -258,14 +258,14 @@ export default function SiteShell() {
 
           {/* Section nav; on wide screens it lines up with the content column below */}
           <nav aria-label="Sections" className="absolute inset-x-0 top-0 z-20 xl:px-24">
-            <ul className="flex items-center justify-between gap-4 px-6 py-5 md:py-8 lg:px-10 xl:mx-auto xl:max-w-[640px] xl:px-0">
+            <ul className="flex items-center justify-between gap-3 px-4 py-5 min-[360px]:gap-4 min-[360px]:px-6 md:py-8 lg:px-10 xl:mx-auto xl:max-w-[640px] xl:px-0">
               {sections.map((s, i) => (
                 <li key={s.id}>
                   <a
                     href={`#${s.id}`}
                     onClick={linkTo(i)}
                     aria-current={active === i ? "true" : undefined}
-                    className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors md:tracking-[0.15em] lg:text-xs xl:tracking-[0.2em] ${
+                    className={`text-[10px] font-medium uppercase tracking-[0.1em] transition-colors min-[360px]:text-[11px] min-[400px]:tracking-[0.2em] md:tracking-[0.15em] lg:text-xs xl:tracking-[0.2em] ${
                       active === i ? "text-white underline underline-offset-4" : "text-white/65 hover:text-white"
                     }`}
                   >
