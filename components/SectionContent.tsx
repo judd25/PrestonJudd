@@ -2,6 +2,7 @@ import { bio, compositions, futureProjects, listen } from "@/content/site";
 import type { Composition, FutureProject } from "@/content/site";
 import Embed from "./Embed";
 import SoundCloudPopupLink from "./SoundCloudPopupLink";
+import YouTubePlaylist from "./YouTubePlaylist";
 
 /** Number, title, and rule. Rendered outside the scroll area so it stays put on desktop. */
 export function SectionHeader({ number, title, id }: { number: number; title: string; id: string }) {
@@ -82,7 +83,11 @@ export function ListenSection() {
       <div className="space-y-6">
         {listen.embeds.map((embed, i) => (
           <div key={i} className="overflow-hidden rounded-2xl border border-white/15 bg-black/30 p-2 shadow-2xl shadow-black/40">
-            <Embed embed={embed} />
+            {embed.type === "youtube" && embed.tracks?.length ? (
+              <YouTubePlaylist title={embed.title} tracks={embed.tracks} />
+            ) : (
+              <Embed embed={embed} />
+            )}
           </div>
         ))}
       </div>

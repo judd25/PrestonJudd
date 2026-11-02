@@ -1,8 +1,13 @@
 import type { Embed as EmbedConfig } from "@/content/site";
 
+/** The 11-character video ID in a YouTube URL, or undefined (e.g. for a playlist link). */
+export function youTubeVideoId(url: string): string | undefined {
+  return url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
+}
+
 /** Embed URL for a YouTube video, a playlist (…?list=…), or a video within a playlist. */
 function youTubeSrc(url: string): string {
-  const video = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
+  const video = youTubeVideoId(url);
   const list = url.match(/[?&]list=([\w-]+)/)?.[1];
   const base = "https://www.youtube-nocookie.com/embed/";
   if (list) return `${base}${video ?? "videoseries"}?list=${list}`;

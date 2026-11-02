@@ -31,7 +31,12 @@ export type Embed =
       /** Any YouTube video or playlist URL (watch?v=…, youtu.be/…, playlist?list=…) or just the video ID. */
       url: string;
       title: string;
+      /** Optional track list shown under the player; clicking a track plays it. The player starts on the first one. */
+      tracks?: Track[];
     };
+
+/** One video in a track list. `url` is the video's YouTube link (watch?v=… or youtu.be/…). */
+export type Track = { title: string; detail?: string; url: string; duration?: string };
 
 export type Link = { label: string; href: string };
 
@@ -106,6 +111,21 @@ export const listen = {
       type: "youtube",
       url: "https://youtube.com/playlist?list=PLGnyDDQC7yVA",
       title: "Preston Judd recordings on YouTube",
+      // The list shown under the player, in this order. When you add a video to the YouTube
+      // playlist, add a line here too.
+      tracks: [
+        { title: "Cilicians Attack", detail: "Joseph LoDuca · Spartacus: House of Ashur", url: "https://youtu.be/7ovr1mHGCvk", duration: "6:03" },
+        { title: "Hail, Caesar", detail: "Joseph LoDuca · Spartacus: House of Ashur", url: "https://youtu.be/deHuuxdL0pM", duration: "5:15" },
+        { title: "Flight of the Cinema Therapists", detail: "Caleb Blood · Cinema Therapy", url: "https://youtu.be/qgcU1r6m3lk", duration: "2:13" },
+        { title: "Fiery Foes – Official Trailer", detail: "Minecraft Legends", url: "https://youtu.be/DsKj-1_fl60", duration: "1:36" },
+        { title: "El Chocante (feat. Ray Vega)", detail: "Victor Rendon & Bronx Conexion Latin Jazz Big Band · Mambo Boulevard", url: "https://youtu.be/Fl_sXchv1aQ", duration: "6:39" },
+        { title: "Chale", detail: "Victor Rendon & Bronx Conexion Latin Jazz Big Band · Mambo Boulevard", url: "https://youtu.be/oVUYcQbiAZs", duration: "5:38" },
+        { title: "Mami Me Gusto (feat. Jorge Maldonado, Marco Bermudez & Hector Davila)", detail: "Victor Rendon & Bronx Conexion Latin Jazz Big Band · Mambo Boulevard", url: "https://youtu.be/8aqlK-kx4Ls", duration: "6:30" },
+        { title: "Year of the Rabbit Theme & Skin Music", detail: "Honor of Kings", url: "https://youtu.be/atdq2EFsNCk", duration: "18:49" },
+        { title: "Jiang Ziya Theme", detail: "Honor of Kings", url: "https://youtu.be/lZsyqro0yQQ", duration: "6:24" },
+        { title: "Zhao Huaizhen Theme", detail: "Honor of Kings", url: "https://youtu.be/h_I-vOrReT8", duration: "6:26" },
+        { title: "2023 Chinese New Year Intro Music", detail: "Honor of Kings", url: "https://youtu.be/XE3mIq-uvfc", duration: "2:56" },
+      ],
     },
     // Add more players here, for example:
     // { type: "spotify", url: "https://open.spotify.com/playlist/3joPhu3z43URQ4y15n7rWj", title: "Preston Judd recordings on Spotify", height: 352 },
