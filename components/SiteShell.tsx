@@ -92,6 +92,8 @@ export default function SiteShell() {
       setActive(index);
       setHeroShown(false);
       if (index > 0) setNudge(false);
+      // An old hash (e.g. #future-projects) is swapped for the section's current one.
+      history.replaceState(null, "", `#${sections[index].id}`);
     }
     setToday(localDateString());
 
@@ -216,7 +218,7 @@ export default function SiteShell() {
     <BioSection key="bio" />,
     <ListenSection key="listen" />,
     <CompositionsSection key="compositions" />,
-    <FutureSection key="future-projects" today={today} />,
+    <FutureSection key="upcoming-projects" today={today} />,
   ];
 
   const pad = (n: number) => String(n).padStart(2, "0");

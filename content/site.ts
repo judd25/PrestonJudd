@@ -92,7 +92,7 @@ export const bio = {
   navLabel: "Bio",
   title: "Bio",
   paragraphs: [
-    "I'm a freelance bass trombonist based in New York City and Utah. I've performed with premier ensembles including the Utah Symphony & Opera and Boston Brass, and shared the stage with artists such as the Beach Boys, Celtic Woman, Leslie Odom Jr., Storm Large, Joshua Henry, Byron Stripling, Christopher Bill, and Wycliffe Gordon.",
+    "I'm a freelance bass trombonist based in New York City and Utah. I've performed with premier ensembles including the Utah Symphony & Opera and Boston Brass, and shared the stage with artists such as the Beach Boys, Celtic Woman, Joshua Henry, Leslie Odom Jr., Alex Sharpe, Storm Large, Byron Stripling, Christopher Bill, and Wycliffe Gordon.",
     "My playing can also be heard on screen and in games, including the soundtrack of the STARZ hit series Spartacus: House of Ashur and the video games Minecraft Legends, Honor of Kings, and League of Legends.",
   ],
   // Optional labeled rows shown under the bio. Leave empty to hide them. Example:
@@ -154,7 +154,7 @@ export const compositions = {
       year: 2017,
       instrumentation: "Piano, Strings, Bass, Synthesizer",
       description:
-        "I wrote this piece for a MOTH competition and I took it very literally not knowing that company featured space exploration, not metamorphosis.",
+        "I wrote this piece for a MOTH competition, and I took it very literally, not knowing that the company featured space exploration, not metamorphosis.",
       link: { label: "Listen", href: "https://soundcloud.com/prestonedwardjudd/the-moth" },
     },
     {
